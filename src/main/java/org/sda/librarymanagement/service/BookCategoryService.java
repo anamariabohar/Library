@@ -1,6 +1,9 @@
 package org.sda.librarymanagement.service;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
 
 import org.sda.librarymanagement.entity.BookCategory;
 import org.sda.librarymanagement.repository.BookCategoryRepository;
@@ -16,6 +19,9 @@ public class BookCategoryService {
 	@Autowired
 	private BookCategoryRepository bookCategoryRepository;
 
+	@Autowired
+	private EntityManager entityManager;
+
 	public List<BookCategory> getAllBookCategories() {
 		return bookCategoryRepository.findAll();
 	}
@@ -24,21 +30,21 @@ public class BookCategoryService {
 		return bookCategoryRepository.findAllById(ids);
 	}
 
-	public BookCategory getOneBookById(@PathVariable Long id) {
-		return bookCategoryRepository.getOne(id);
+	public BookCategory getOneBookCategoryById(@PathVariable Long id) {
+		return entityManager.find(BookCategory.class, id);
 	}
 
 	public void saveBookCategory(BookCategory bookCategory) {
 		bookCategoryRepository.saveAndFlush(bookCategory);
 	}
 
-	public BookCategory updateBook(@PathVariable Long id, @RequestBody BookCategory bookCategory) {
+	public BookCategory updateBookCategory(@PathVariable Long id, @RequestBody BookCategory bookCategory) {
 		BookCategory existingBookCategory = bookCategoryRepository.getOne(id);
 		BeanUtils.copyProperties(bookCategory, existingBookCategory);
 		return bookCategoryRepository.saveAndFlush(existingBookCategory);
 	}
 
-	public BookCategory deleteBook(@PathVariable Long id) {
+	public BookCategory deleteBookCategory(@PathVariable Long id) {
 		BookCategory existingBookCategory = bookCategoryRepository.getOne(id);
 		bookCategoryRepository.delete(existingBookCategory);
 		return existingBookCategory;
