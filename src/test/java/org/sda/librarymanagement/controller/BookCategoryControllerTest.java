@@ -44,7 +44,7 @@ public class BookCategoryControllerTest {
 	@Test
 	public void findBookCategory() throws Exception {
 		addBookCategory();
-		
+
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/library/bookCategory/1")
 				.accept(MediaType.APPLICATION_JSON);
 
