@@ -2,6 +2,8 @@ package org.sda.librarymanagement.service;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.sda.librarymanagement.entity.Book;
 import org.sda.librarymanagement.repository.BookRepository;
 import org.springframework.beans.BeanUtils;
@@ -16,12 +18,15 @@ public class BookService {
 	@Autowired
 	private BookRepository bookRepository;
 
+	@Autowired
+	private EntityManager entityManager;
+
 	public List<Book> getAllBooks() {
 		return bookRepository.findAll();
 	}
 
 	public Book getOneBookById(@PathVariable Long id) {
-		return bookRepository.getOne(id);
+		return entityManager.find(Book.class, id);
 	}
 
 	public void saveBook(@RequestBody Book book) {
@@ -29,13 +34,13 @@ public class BookService {
 	}
 
 	public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
-		Book existingBook = bookRepository.getOne(id);
+		Book existingBook = entityManager.find(Book.class, id);
 		BeanUtils.copyProperties(book, existingBook);
 		return bookRepository.saveAndFlush(existingBook);
 	}
 
 	public Book deleteBook(@PathVariable Long id) {
-		Book existingBook = bookRepository.getOne(id);
+		Book existingBook = entityManager.find(Book.class, id);
 		bookRepository.delete(existingBook);
 		return existingBook;
 	}

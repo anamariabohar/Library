@@ -1,7 +1,6 @@
 package org.sda.librarymanagement.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -39,13 +38,13 @@ public class BookCategoryService {
 	}
 
 	public BookCategory updateBookCategory(@PathVariable Long id, @RequestBody BookCategory bookCategory) {
-		BookCategory existingBookCategory = bookCategoryRepository.getOne(id);
+		BookCategory existingBookCategory = entityManager.find(BookCategory.class, id);
 		BeanUtils.copyProperties(bookCategory, existingBookCategory);
 		return bookCategoryRepository.saveAndFlush(existingBookCategory);
 	}
 
 	public BookCategory deleteBookCategory(@PathVariable Long id) {
-		BookCategory existingBookCategory = bookCategoryRepository.getOne(id);
+		BookCategory existingBookCategory = entityManager.find(BookCategory.class, id);
 		bookCategoryRepository.delete(existingBookCategory);
 		return existingBookCategory;
 	}

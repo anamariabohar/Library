@@ -1,6 +1,7 @@
 package org.sda.librarymanagement.controller;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ public class BookCategoryControllerTest {
 
 	@Test
 	public void addBookCategory() throws Exception {
-		String mockBookCategoryAsJSON = "{\"categoryName\":\"Science Fiction\"}";
+		String mockBookCategoryAsJSON = "{\"categoryId\":1,\"books\":[],\"categoryName\":\"Science Fiction\"}";
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/library/bookCategory/")
 				.accept(MediaType.APPLICATION_JSON).content(mockBookCategoryAsJSON)
 				.contentType(MediaType.APPLICATION_JSON);
@@ -36,9 +37,9 @@ public class BookCategoryControllerTest {
 
 		MockHttpServletResponse response = result.getResponse();
 
-		assertEquals(HttpStatus.CREATED.value(), response.getStatus());
+		assertThat(response.getStatus(), is(HttpStatus.CREATED.value()));
 
-		assertEquals("http://localhost/bookCategory", response.getHeader(HttpHeaders.LOCATION));
+		assertThat(response.getHeader(HttpHeaders.LOCATION), is("http://localhost/bookCategory"));
 	}
 
 	@Test
@@ -52,7 +53,7 @@ public class BookCategoryControllerTest {
 
 		String resultExpected = "{\"categoryId\":1,\"books\":[],\"categoryName\":\"Science Fiction\"}";
 
-		assertEquals(resultExpected, mvcResult.getResponse().getContentAsString());
+		assertThat(mvcResult.getResponse().getContentAsString(), is(resultExpected));
 	}
 
 	@Test
@@ -69,7 +70,7 @@ public class BookCategoryControllerTest {
 
 		String resultExpected = "{\"categoryId\":1,\"books\":[],\"categoryName\":\"Drama\"}";
 
-		assertEquals(resultExpected, mvcResult.getResponse().getContentAsString());
+		assertThat(mvcResult.getResponse().getContentAsString(), is(resultExpected));
 	}
 
 	@Test
@@ -86,6 +87,6 @@ public class BookCategoryControllerTest {
 
 		MockHttpServletResponse response = mvcResult.getResponse();
 
-		assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
+		assertThat(response.getStatus(), is(HttpStatus.NO_CONTENT.value()));
 	}
 }
