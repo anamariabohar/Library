@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Service
 public class ClientService {
 
-	@Autowired
+	@Autowired(required = true)
 	private ClientRepository clientRepository;
 
 	@Autowired

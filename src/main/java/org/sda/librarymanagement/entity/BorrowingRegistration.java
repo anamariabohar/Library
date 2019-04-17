@@ -1,6 +1,6 @@
 package org.sda.librarymanagement.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,8 +31,14 @@ public class BorrowingRegistration {
 	@JoinColumn(name = "book_id")
 	private Book book;
 	@Column(name = "borrowing_date")
-	private Date borrowingDate;
+	private LocalDate borrowingDate;
 	@Column(name = "return_date")
-	private Date returnDate;
+	private LocalDate returnDate;
+
+	@Override
+	public String toString() {
+		return "BorrowingRegistration [borrowingRegistrationId=" + borrowingRegistrationId + ", client=" + client
+				+ ", book=" + book + ", borrowingDate=" + borrowingDate + ", returnDate=" + returnDate + "]";
+	}
 
 }

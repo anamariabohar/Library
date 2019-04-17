@@ -27,4 +27,9 @@ public class BookCategory {
 	@Column(name = "category_name")
 	private String categoryName;
 
+	@Override
+	public String toString() {
+		return "BookCategory [categoryId=" + categoryId + ", books=" + books + ", categoryName=" + categoryName + "]";
+	}
+
 }

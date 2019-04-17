@@ -4,7 +4,13 @@ public enum MembershipTypeEnum {
 
 	BASIC(5), PREMIUM(50), LUXURY(100);
 
-	private MembershipTypeEnum(double price) {
+	private final int price;
+
+	private MembershipTypeEnum(int price) {
+		this.price = price;
 	}
 
+	public int getPrice() {
+		return price;
+	}
 }

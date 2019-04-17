@@ -1,11 +1,17 @@
 package org.sda.librarymanagement.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.sda.librarymanagement.entity.Book;
 import org.sda.librarymanagement.entity.BorrowingRegistration;
+import org.sda.librarymanagement.entity.Client;
+import org.sda.librarymanagement.entity.Membership;
 import org.sda.librarymanagement.repository.BorrowingRegistrationRepository;
+import org.sda.librarymanagement.service.exceptions.BorrowingCannotPassTheEndDateOfTheMembershipException;
+import org.sda.librarymanagement.service.exceptions.NotActiveOrInexistentMembershipException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +23,9 @@ public class BorrowingRegistrationService {
 
 	@Autowired
 	private BorrowingRegistrationRepository borrowingRegistrationRepository;
+
+	@Autowired
+	private MembershipService membershipService;
 
 	@Autowired
 	private EntityManager entityManager;
@@ -44,6 +53,17 @@ public class BorrowingRegistrationService {
 		BorrowingRegistration existingBorrowingRegistration = entityManager.find(BorrowingRegistration.class, id);
 		borrowingRegistrationRepository.delete(existingBorrowingRegistration);
 		return existingBorrowingRegistration;
+	}
+
+	public void getBorrowingRegistrationDate(Client client, Membership membership, Book book,
+			BorrowingRegistration borrowingRegistration)
+			throws BorrowingCannotPassTheEndDateOfTheMembershipException, NotActiveOrInexistentMembershipException {
+		if (membershipService.hasBorrowingPeriodPassedTheEndDateOfTheMembership(client, membership, book) == true) {
+			throw new BorrowingCannotPassTheEndDateOfTheMembershipException(
+					"Borrowing period is longer than availability of the membership!");
+		} else {
+			borrowingRegistration.setBorrowingDate(LocalDate.now());
+		}
 	}
 
 }

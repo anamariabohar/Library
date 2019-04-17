@@ -52,7 +52,7 @@ public class MembershipService {
 		return existingMembership;
 	}
 
-	public Membership verifyIfTheClientHasActiveMembership(Client client)
+	private Membership verifyIfTheClientHasActiveMembership(Client client)
 			throws NotActiveOrInexistentMembershipException {
 		client = clientService.getOneClientById(client.getClientId());
 		List<Membership> memberships = client.getMemberships();
@@ -68,7 +68,7 @@ public class MembershipService {
 		return null;
 	}
 
-	public BorrowingPeriodEnum getBorrowingPeriodByMembership(Client client, Membership membership, Book book) {
+	private BorrowingPeriodEnum getBorrowingPeriodByMembership(Membership membership, Book book) {
 		BorrowingPeriodEnum borrowingPeriodByMembership = book.getBorrowingPeriod();
 		switch (membership.getMembershipType()) {
 		case BASIC:
@@ -86,8 +86,15 @@ public class MembershipService {
 		return borrowingPeriodByMembership;
 	}
 
-	private boolean hasBorrowingPeriodPassedTheEndDateOfTheMembership(Membership membership, Book book) {
-
+	public boolean hasBorrowingPeriodPassedTheEndDateOfTheMembership(Client client, Membership membership, Book book)
+			throws NotActiveOrInexistentMembershipException {
+		Membership actualMembershipOfTheClient = verifyIfTheClientHasActiveMembership(client);
+		BorrowingPeriodEnum borrowingPeriod = getBorrowingPeriodByMembership(membership, book);
+		LocalDate borrowingPeriodOfThePlusStartDateOfTheMembership = actualMembershipOfTheClient.getStartDate()
+				.plusDays(borrowingPeriod.getDays());
+		LocalDate endDaDateOfTheMembership = actualMembershipOfTheClient.getEndDate();
+		if (borrowingPeriodOfThePlusStartDateOfTheMembership.isAfter(endDaDateOfTheMembership))
+			return true;
 		return false;
 	}
 

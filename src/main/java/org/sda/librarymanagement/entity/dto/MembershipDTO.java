@@ -4,9 +4,10 @@ import lombok.Data;
 
 @Data
 public class MembershipDTO {
-	private int membershipID;
+	private Long membershipID;
 	private String membershipType;
 	private String startDate;
 	private String endDate;
-	private int clientId;
+	private Long clientId;
+
 }
