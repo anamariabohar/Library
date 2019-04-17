@@ -7,5 +7,4 @@ Design an application for a library management.
 * Clients have to have a membership to be able to borrow books.
 * Memberships have expiration date and have to be renewed.
 * There are books that can only be borrowed inside the library and cannot be taken home.
-* Clients that have a special membership can borrow those books at home.
 * Books have different borrowing periods.
