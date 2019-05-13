@@ -13,4 +13,5 @@ public enum MembershipTypeEnum {
 	public int getPrice() {
 		return price;
 	}
+
 }

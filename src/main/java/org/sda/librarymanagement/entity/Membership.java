@@ -17,13 +17,14 @@ import javax.persistence.Table;
 import org.sda.librarymanagement.entity.enums.MembershipTypeEnum;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Memberships")
-
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Membership {
 
 	@Id

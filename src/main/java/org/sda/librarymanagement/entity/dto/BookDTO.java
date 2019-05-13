@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class BookDTO {
 
-	private int bookId;
+	private Long bookId;
 	private String bookName;
 	private String authorName;
 	private boolean borrowingTypeAtHome;
