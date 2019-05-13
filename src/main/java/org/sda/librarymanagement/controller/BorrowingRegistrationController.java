@@ -35,7 +35,7 @@ public class BorrowingRegistrationController {
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/boborrowingRegistrationok/{id}")
+	@GetMapping("/borrowingRegistration/{id}")
 	public ResponseEntity<BorrowingRegistration> getBorrowingRegistrationById(@PathVariable("id") Long id) {
 		BorrowingRegistration borrowingRegistration = borrowingRegistrationService.getOneBorrowingRegistrationById(id);
 		return new ResponseEntity<BorrowingRegistration>(borrowingRegistration, HttpStatus.OK);

@@ -11,11 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Category")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class BookCategory {
 
 	@Id

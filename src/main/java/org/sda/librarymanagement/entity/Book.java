@@ -18,11 +18,14 @@ import javax.persistence.Table;
 
 import org.sda.librarymanagement.entity.enums.BorrowingPeriodEnum;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Books")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
