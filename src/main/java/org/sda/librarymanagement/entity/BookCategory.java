@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -25,14 +26,10 @@ public class BookCategory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "category_id")
 	private Long categoryId;
-	@ManyToMany(mappedBy = "bookCategories")
-	private List<Book> books = new ArrayList<Book>();
 	@Column(name = "category_name")
 	private String categoryName;
-
-	@Override
-	public String toString() {
-		return "BookCategory [categoryId=" + categoryId + ", books=" + books + ", categoryName=" + categoryName + "]";
-	}
+	@JsonIgnore
+	@ManyToMany(mappedBy = "bookCategories")
+	private List<Book> books = new ArrayList<Book>();
 
 }

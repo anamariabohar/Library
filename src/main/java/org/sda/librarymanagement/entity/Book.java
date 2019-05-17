@@ -44,12 +44,4 @@ public class Book {
 	@JoinTable(name = "book_category", joinColumns = { @JoinColumn(name = "book_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "category_id") })
 	List<BookCategory> bookCategories = new ArrayList<BookCategory>();
-
-	@Override
-	public String toString() {
-		return "Book [bookId=" + bookId + ", bookName=" + bookName + ", authorName=" + authorName
-				+ ", borrowingTypeAtHome=" + borrowingTypeAtHome + ", borrowingPeriod=" + borrowingPeriod
-				+ ", bookCategories=" + bookCategories + "]";
-	}
-
 }

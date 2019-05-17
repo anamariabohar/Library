@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.sda.librarymanagement.entity.Book;
 import org.sda.librarymanagement.entity.BookCategory;
+import org.sda.librarymanagement.entity.dto.BookCategoryDTO;
 import org.sda.librarymanagement.repository.BookCategoryRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +21,16 @@ public class BookCategoryService {
 	private BookCategoryRepository bookCategoryRepository;
 
 	@Autowired
+	private BookService bookService;
+
+	@Autowired
 	private EntityManager entityManager;
 
-	public List<BookCategory> getAllBookCategories() {
+	public Iterable<BookCategory> getAllBookCategories() {
 		return bookCategoryRepository.findAll();
 	}
 
-	public List<BookCategory> getBookCategoriesByIds(List<Long> ids) {
+	public Iterable<BookCategory> getBookCategoriesByIds(List<Long> ids) {
 		return bookCategoryRepository.findAllById(ids);
 	}
 
@@ -34,19 +39,27 @@ public class BookCategoryService {
 	}
 
 	public void saveBookCategory(BookCategory bookCategory) {
-		bookCategoryRepository.saveAndFlush(bookCategory);
+		bookCategoryRepository.save(bookCategory);
 	}
 
 	public BookCategory updateBookCategory(@PathVariable Long id, @RequestBody BookCategory bookCategory) {
 		BookCategory existingBookCategory = entityManager.find(BookCategory.class, id);
 		BeanUtils.copyProperties(bookCategory, existingBookCategory);
-		return bookCategoryRepository.saveAndFlush(existingBookCategory);
+		return bookCategoryRepository.save(existingBookCategory);
 	}
 
 	public BookCategory deleteBookCategory(@PathVariable Long id) {
 		BookCategory existingBookCategory = entityManager.find(BookCategory.class, id);
 		bookCategoryRepository.delete(existingBookCategory);
 		return existingBookCategory;
+	}
+
+	public BookCategory convertFromDTOToEntity(BookCategoryDTO bookCategoryDTO) {
+		BookCategory bookCategory = new BookCategory();
+		bookCategory.setCategoryId(bookCategoryDTO.getCategoryId());
+		bookCategory.setCategoryName(bookCategoryDTO.getCategoryName());
+		bookCategory.setBooks((List<Book>) bookService.getBooksByIds(bookCategoryDTO.getBooks()));
+		return bookCategory;
 	}
 
 }

@@ -3,6 +3,7 @@ package org.sda.librarymanagement.controller;
 import java.util.List;
 
 import org.sda.librarymanagement.entity.BookCategory;
+import org.sda.librarymanagement.entity.dto.BookCategoryDTO;
 import org.sda.librarymanagement.service.BookCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,9 @@ public class BookCategoryController {
 	private BookCategoryService bookCategoryService;
 
 	@PostMapping("/bookCategory")
-	public ResponseEntity<Void> addBookCategory(@RequestBody BookCategory bookCategory, UriComponentsBuilder builder) {
+	public ResponseEntity<Void> addBookCategory(@RequestBody BookCategoryDTO bookCategoryDTO,
+			UriComponentsBuilder builder) {
+		BookCategory bookCategory = bookCategoryService.convertFromDTOToEntity(bookCategoryDTO);
 		bookCategoryService.saveBookCategory(bookCategory);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/bookCategory").buildAndExpand(bookCategory.getCategoryId()).toUri());
@@ -41,13 +44,14 @@ public class BookCategoryController {
 
 	@GetMapping("/bookCategories")
 	public ResponseEntity<List<BookCategory>> getAllBookCategories() {
-		List<BookCategory> bookCategories = bookCategoryService.getAllBookCategories();
+		List<BookCategory> bookCategories = (List<BookCategory>) bookCategoryService.getAllBookCategories();
 		return new ResponseEntity<List<BookCategory>>(bookCategories, HttpStatus.OK);
 	}
 
 	@PutMapping("/bookCategory/{id}")
 	public ResponseEntity<BookCategory> updateBookCategory(@PathVariable Long id,
-			@RequestBody BookCategory bookCategory) {
+			@RequestBody BookCategoryDTO bookCategoryDTO) {
+		BookCategory bookCategory = bookCategoryService.convertFromDTOToEntity(bookCategoryDTO);
 		bookCategoryService.updateBookCategory(id, bookCategory);
 		return new ResponseEntity<BookCategory>(bookCategory, HttpStatus.OK);
 	}

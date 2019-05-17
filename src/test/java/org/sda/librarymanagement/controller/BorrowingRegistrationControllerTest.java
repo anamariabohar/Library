@@ -62,7 +62,7 @@ public class BorrowingRegistrationControllerTest {
 
 	@Test
 	public void addBookCategory() throws Exception {
-		String mockBookCategoryAsJSON = "{\"categoryId\":1,\"books\":[{\"bookId\":1}],\"categoryName\":\"Science Fiction\"}";
+		String mockBookCategoryAsJSON = "{\"categoryId\":1,\"books\":[],\"categoryName\":\"Science Fiction\"}";
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/library/bookCategory/")
 				.accept(MediaType.APPLICATION_JSON).content(mockBookCategoryAsJSON)
 				.contentType(MediaType.APPLICATION_JSON);
@@ -79,7 +79,7 @@ public class BorrowingRegistrationControllerTest {
 	@Test
 	public void addBook() throws Exception {
 		addBookCategory();
-		String mockBookCategoryAsJSON = "{\"bookName\":\"City of Bones\",\"authorName\":\"Cassandra Clare\",\"borrowingTypeAtHome\":true,\"borrowingPeriod\":\"TWO_WEEKS\",\"bookCategories\":[{\"categoryId\":1}]}";
+		String mockBookCategoryAsJSON = "{\"bookName\":\"City of Bones\",\"authorName\":\"Cassandra Clare\",\"borrowingTypeAtHome\":true,\"borrowingPeriod\":\"TWO_WEEKS\",\"bookCategories\":[\"categoryId\":1,\"categoryName\":\"Science Fiction\"]}";
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/library/book/").accept(MediaType.APPLICATION_JSON)
 				.content(mockBookCategoryAsJSON).contentType(MediaType.APPLICATION_JSON);
 
@@ -95,7 +95,6 @@ public class BorrowingRegistrationControllerTest {
 	@Test
 	public void addBorrowingRegistration() throws Exception {
 		addMembership();
-		addClient();
 		addClient();
 		addBook();
 		String mockBookCategoryAsJSON = "{\"borrowingRegistrationId\":1,\"client\":{\"clientId\" :1},\"book\":{\"bookId\":1},\"borrowingDate\":\"2018-04-25\",\"returnDate\":\"2018-05-25\"}";
