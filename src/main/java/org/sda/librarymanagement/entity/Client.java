@@ -39,11 +39,4 @@ public class Client {
 	private String email;
 	@OneToMany(mappedBy = "client")
 	private List<Membership> memberships;
-
-	@Override
-	public String toString() {
-		return "Client [clientId=" + clientId + ", username=" + username + ", password=" + password + ", firstName="
-				+ firstName + ", lastName=" + lastName + ", phone=" + phone + ", email=" + email + "]";
-	}
-
 }

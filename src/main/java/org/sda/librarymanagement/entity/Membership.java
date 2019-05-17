@@ -40,14 +40,8 @@ public class Membership {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Column(name = "end_date")
 	private LocalDate endDate;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "client_id")
 	private Client client;
-
-	@Override
-	public String toString() {
-		return "Membership [membershipID=" + membershipID + ", membershipType=" + membershipType + ", startDate="
-				+ startDate + ", endDate=" + endDate + "]";
-	}
 
 }

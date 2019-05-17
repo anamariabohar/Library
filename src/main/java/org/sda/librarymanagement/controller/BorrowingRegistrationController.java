@@ -3,6 +3,7 @@ package org.sda.librarymanagement.controller;
 import java.util.List;
 
 import org.sda.librarymanagement.entity.BorrowingRegistration;
+import org.sda.librarymanagement.entity.dto.BorrowingRegistrationDTO;
 import org.sda.librarymanagement.service.BorrowingRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,8 +27,10 @@ public class BorrowingRegistrationController {
 	private BorrowingRegistrationService borrowingRegistrationService;
 
 	@PostMapping("/borrowingRegistration")
-	public ResponseEntity<Void> addBorrowingRegistration(@RequestBody BorrowingRegistration borrowingRegistration,
+	public ResponseEntity<Void> addBorrowingRegistration(@RequestBody BorrowingRegistrationDTO borrowingRegistrationDTO,
 			UriComponentsBuilder builder) {
+		BorrowingRegistration borrowingRegistration = borrowingRegistrationService
+				.convertFromDTOToEntity(borrowingRegistrationDTO);
 		borrowingRegistrationService.saveBorrowingRegistration(borrowingRegistration);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/borrowingRegistration")
@@ -43,13 +46,16 @@ public class BorrowingRegistrationController {
 
 	@GetMapping("/borrowingRegistrations")
 	public ResponseEntity<List<BorrowingRegistration>> getAllBorrowingRegistrations() {
-		List<BorrowingRegistration> borrowingRegistration = borrowingRegistrationService.getAllBorrowingRegistrations();
+		List<BorrowingRegistration> borrowingRegistration = (List<BorrowingRegistration>) borrowingRegistrationService
+				.getAllBorrowingRegistrations();
 		return new ResponseEntity<List<BorrowingRegistration>>(borrowingRegistration, HttpStatus.OK);
 	}
 
 	@PutMapping("/borrowingRegistration/{id}")
 	public ResponseEntity<BorrowingRegistration> updateBorrowingRegistration(@PathVariable Long id,
-			@RequestBody BorrowingRegistration borrowingRegistration) {
+			@RequestBody BorrowingRegistrationDTO borrowingRegistrationDTO) {
+		BorrowingRegistration borrowingRegistration = borrowingRegistrationService
+				.convertFromDTOToEntity(borrowingRegistrationDTO);
 		borrowingRegistrationService.updateBorrowingRegistration(id, borrowingRegistration);
 		return new ResponseEntity<BorrowingRegistration>(borrowingRegistration, HttpStatus.OK);
 	}

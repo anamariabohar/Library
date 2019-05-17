@@ -6,8 +6,9 @@ import lombok.Data;
 public class BorrowingRegistrationDTO {
 
 	private Long borrowingRegistrationId;
-	private Long client;
-	private Long book;
+	private Long clientId;
+	private Long bookId;
 	private String borrowingDate;
+	private String dueDate;
 	private String returnDate;
 }

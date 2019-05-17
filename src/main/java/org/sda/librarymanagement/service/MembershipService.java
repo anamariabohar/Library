@@ -1,6 +1,7 @@
 package org.sda.librarymanagement.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,7 +9,9 @@ import javax.persistence.EntityManager;
 import org.sda.librarymanagement.entity.Book;
 import org.sda.librarymanagement.entity.Client;
 import org.sda.librarymanagement.entity.Membership;
+import org.sda.librarymanagement.entity.dto.MembershipDTO;
 import org.sda.librarymanagement.entity.enums.BorrowingPeriodEnum;
+import org.sda.librarymanagement.entity.enums.MembershipTypeEnum;
 import org.sda.librarymanagement.repository.MembershipRepository;
 import org.sda.librarymanagement.service.exceptions.NotActiveOrInexistentMembershipException;
 import org.springframework.beans.BeanUtils;
@@ -28,22 +31,26 @@ public class MembershipService {
 	@Autowired
 	private EntityManager entityManager;
 
-	public List<Membership> getAllMemberships() {
+	public Iterable<Membership> getAllMemberships() {
 		return membershipRepository.findAll();
 	}
 
 	public void saveMembership(Membership membership) {
-		membershipRepository.saveAndFlush(membership);
+		membershipRepository.save(membership);
 	}
 
 	public Membership getOneMembershipById(Long id) {
 		return entityManager.find(Membership.class, id);
 	}
 
+	public Iterable<Membership> getMembershipsByIds(List<Long> ids) {
+		return membershipRepository.findAllById(ids);
+	}
+
 	public Membership updateMembership(@PathVariable Long id, @RequestBody Membership membership) {
 		Membership existingMembership = entityManager.find(Membership.class, id);
 		BeanUtils.copyProperties(membership, existingMembership);
-		return membershipRepository.saveAndFlush(existingMembership);
+		return membershipRepository.save(existingMembership);
 	}
 
 	public Membership deleteMembership(@PathVariable Long id) {
@@ -96,6 +103,27 @@ public class MembershipService {
 		if (borrowingPeriodOfThePlusStartDateOfTheMembership.isAfter(endDaDateOfTheMembership))
 			return true;
 		return false;
+	}
+
+	public Membership convertFromDTOToEntity(MembershipDTO membershipDTO) {
+		Membership membership = new Membership();
+		Client client = clientService.getOneClientById(membershipDTO.getClientId());
+		MembershipTypeEnum membershipTypes = MembershipTypeEnum.valueOf(membershipDTO.getMembershipType());
+
+		membership.setMembershipID(membershipDTO.getMembershipID());
+		membership.setMembershipType(membershipTypes);
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String start = membershipDTO.getStartDate();
+		String end = membershipDTO.getEndDate();
+		LocalDate startDate = LocalDate.parse(start, formatter);
+		LocalDate endDate = LocalDate.parse(end, formatter);
+
+		membership.setStartDate(startDate);
+		membership.setEndDate(endDate);
+
+		membership.setClient(client);
+		return membership;
 	}
 
 }

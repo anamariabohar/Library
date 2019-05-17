@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.sda.librarymanagement.entity.Client;
+import org.sda.librarymanagement.entity.Membership;
+import org.sda.librarymanagement.entity.dto.ClientDTO;
 import org.sda.librarymanagement.repository.ClientRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,10 @@ public class ClientService {
 	@Autowired
 	private EntityManager entityManager;
 
-	public List<Client> getAllClients() {
+	@Autowired
+	private MembershipService membershipService;
+
+	public Iterable<Client> getAllClients() {
 		return clientRepository.findAll();
 	}
 
@@ -31,19 +36,34 @@ public class ClientService {
 	}
 
 	public void saveClient(Client client) {
-		clientRepository.saveAndFlush(client);
+		clientRepository.save(client);
 	}
 
 	public Client updateClient(@PathVariable Long id, @RequestBody Client client) {
 		Client existingClient = entityManager.find(Client.class, id);
 		BeanUtils.copyProperties(client, existingClient);
-		return clientRepository.saveAndFlush(existingClient);
+		return clientRepository.save(existingClient);
 	}
 
 	public Client deleteClient(@PathVariable Long id) {
 		Client existingClient = entityManager.find(Client.class, id);
 		clientRepository.delete(existingClient);
 		return existingClient;
+	}
+
+	public Client convertFromDTOToEntity(ClientDTO clientDTO) {
+		Client client = new Client();
+
+		client.setClientId(clientDTO.getClientId());
+		client.setUsername(clientDTO.getUsername());
+		client.setPassword(clientDTO.getPassword());
+		client.setFirstName(clientDTO.getFirstName());
+		client.setLastName(clientDTO.getLastName());
+		client.setPhone(clientDTO.getPhone());
+		client.setEmail(clientDTO.getEmail());
+		client.setMemberships((List<Membership>) membershipService.getMembershipsByIds(clientDTO.getMemberships()));
+
+		return client;
 	}
 
 	public boolean validateClient(String username, String password) {
