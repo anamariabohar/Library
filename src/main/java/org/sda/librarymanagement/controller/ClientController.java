@@ -3,6 +3,7 @@ package org.sda.librarymanagement.controller;
 import java.util.List;
 
 import org.sda.librarymanagement.entity.Client;
+import org.sda.librarymanagement.entity.dto.ClientDTO;
 import org.sda.librarymanagement.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +26,8 @@ public class ClientController {
 	private ClientService clientService;
 
 	@PostMapping("/client")
-	public ResponseEntity<Void> addClient(@RequestBody Client client, UriComponentsBuilder builder) {
+	public ResponseEntity<Void> addClient(@RequestBody ClientDTO clientDTO, UriComponentsBuilder builder) {
+		Client client = clientService.convertFromDTOToEntity(clientDTO);
 		clientService.saveClient(client);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/client").buildAndExpand(client.getClientId()).toUri());
@@ -40,12 +42,14 @@ public class ClientController {
 
 	@GetMapping("/clients")
 	public ResponseEntity<List<Client>> getAllClients() {
-		List<Client> client = clientService.getAllClients();
+		List<Client> client = (List<Client>) clientService.getAllClients();
 		return new ResponseEntity<List<Client>>(client, HttpStatus.OK);
 	}
 
 	@PutMapping("/client/{id}")
-	public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client) {
+	public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody ClientDTO clientDTO) {
+		Client client = clientService.convertFromDTOToEntity(clientDTO);
+
 		clientService.updateClient(id, client);
 		return new ResponseEntity<Client>(client, HttpStatus.OK);
 	}

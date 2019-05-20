@@ -3,6 +3,7 @@ package org.sda.librarymanagement.controller;
 import java.util.List;
 
 import org.sda.librarymanagement.entity.Book;
+import org.sda.librarymanagement.entity.BookCategory;
 import org.sda.librarymanagement.entity.dto.BookDTO;
 import org.sda.librarymanagement.service.BookCategoryService;
 import org.sda.librarymanagement.service.BookService;
@@ -31,7 +32,7 @@ public class BookController {
 
 	@PostMapping("/book")
 	public ResponseEntity<Void> addBook(@RequestBody BookDTO bookDTO, UriComponentsBuilder builder) {
-		Book book = convertFromDTOToEntity(bookDTO);
+		Book book = bookService.convertFromDTOToEntity(bookDTO);
 		bookService.saveBook(book);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/book").buildAndExpand(book.getBookId()).toUri());
@@ -46,12 +47,13 @@ public class BookController {
 
 	@GetMapping("/books")
 	public ResponseEntity<List<Book>> getAllBooks() {
-		List<Book> book = bookService.getAllBooks();
+		List<Book> book = (List<Book>) bookService.getAllBooks();
 		return new ResponseEntity<List<Book>>(book, HttpStatus.OK);
 	}
 
 	@PutMapping("/book/{id}")
-	public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
+	public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO) {
+		Book book = bookService.convertFromDTOToEntity(bookDTO);
 		bookService.updateBook(id, book);
 		return new ResponseEntity<Book>(book, HttpStatus.OK);
 	}
@@ -69,7 +71,8 @@ public class BookController {
 		book.setAuthorName(bookDTO.getAuthorName());
 		book.setBorrowingPeriod(bookDTO.getBorrowingPeriod());
 		book.setBorrowingTypeAtHome(bookDTO.isBorrowingTypeAtHome());
-		book.setBookCategories(bookCategoryService.getBookCategoriesByIds(bookDTO.getBookCategories()));
+		book.setBookCategories(
+				(List<BookCategory>) bookCategoryService.getBookCategoriesByIds(bookDTO.getBookCategories()));
 		return book;
 
 	}

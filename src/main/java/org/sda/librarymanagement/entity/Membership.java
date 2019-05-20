@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,14 +39,8 @@ public class Membership {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Column(name = "end_date")
 	private LocalDate endDate;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private Client client;
-
-	@Override
-	public String toString() {
-		return "Membership [membershipID=" + membershipID + ", membershipType=" + membershipType + ", startDate="
-				+ startDate + ", endDate=" + endDate + "]";
-	}
 
 }

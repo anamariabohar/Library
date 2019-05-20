@@ -35,13 +35,8 @@ public class BorrowingRegistration {
 	private Book book;
 	@Column(name = "borrowing_date")
 	private LocalDate borrowingDate;
+	@Column(name = "due_date")
+	private LocalDate dueDate;
 	@Column(name = "return_date")
 	private LocalDate returnDate;
-
-	@Override
-	public String toString() {
-		return "BorrowingRegistration [borrowingRegistrationId=" + borrowingRegistrationId + ", client=" + client
-				+ ", book=" + book + ", borrowingDate=" + borrowingDate + ", returnDate=" + returnDate + "]";
-	}
-
 }

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -37,13 +38,7 @@ public class Client {
 	private String phone;
 	@Column(name = "email")
 	private String email;
+	@JsonBackReference
 	@OneToMany(mappedBy = "client")
 	private List<Membership> memberships;
-
-	@Override
-	public String toString() {
-		return "Client [clientId=" + clientId + ", username=" + username + ", password=" + password + ", firstName="
-				+ firstName + ", lastName=" + lastName + ", phone=" + phone + ", email=" + email + "]";
-	}
-
 }

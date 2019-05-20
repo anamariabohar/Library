@@ -1,8 +1,14 @@
 package org.sda.librarymanagement.entity.enums;
 
-public enum MembershipTypeEnum {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-	BASIC(5), PREMIUM(50), LUXURY(100);
+public enum MembershipTypeEnum {
+	@JsonProperty("BASIC")
+	BASIC(5),
+	@JsonProperty("PREMIUM")
+	PREMIUM(50),
+	@JsonProperty("LUXURY")
+	LUXURY(100);
 
 	private final int price;
 
