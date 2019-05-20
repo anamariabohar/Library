@@ -10,20 +10,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.sda.librarymanagement.entity.enums.MembershipTypeEnum;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Memberships")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Membership {
 
 	@Id
@@ -39,7 +37,7 @@ public class Membership {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Column(name = "end_date")
 	private LocalDate endDate;
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "client_id")
 	private Client client;
 

@@ -1,7 +1,5 @@
 package org.sda.librarymanagement.entity.dto;
 
-import java.util.List;
-
 import lombok.Data;
 
 @Data
@@ -14,6 +12,6 @@ public class ClientDTO {
 	private String lastName;
 	private String phone;
 	private String email;
-	private List<Long> memberships;
+	private Long membership;
 
 }

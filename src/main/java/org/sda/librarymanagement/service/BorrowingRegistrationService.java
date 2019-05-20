@@ -1,7 +1,6 @@
 package org.sda.librarymanagement.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -37,8 +36,8 @@ public class BorrowingRegistrationService {
 	@Autowired
 	private EntityManager entityManager;
 
-	public Iterable<BorrowingRegistration> getAllBorrowingRegistrations() {
-		return borrowingRegistrationRepository.findAll();
+	public List<BorrowingRegistration> getAllBorrowingRegistrations() {
+		return (List<BorrowingRegistration>) borrowingRegistrationRepository.findAll();
 	}
 
 	public BorrowingRegistration getOneBorrowingRegistrationById(@PathVariable Long id) {
@@ -70,25 +69,18 @@ public class BorrowingRegistrationService {
 
 		borrowingRegistration.setBorrowingRegistrationId(borrowingRegistrationDTO.getBorrowingRegistrationId());
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String borrowing = borrowingRegistrationDTO.getBorrowingDate();
-		String due = borrowingRegistrationDTO.getDueDate();
-		String returnD = borrowingRegistrationDTO.getReturnDate();
-		LocalDate borrowingDate = LocalDate.parse(borrowing, formatter);
-		LocalDate dueDate = LocalDate.parse(due, formatter);
-		LocalDate returnDate = LocalDate.parse(returnD, formatter);
+		borrowingRegistration.setBook(book);
+		borrowingRegistration.setClient(client);
 
-		borrowingRegistration.setBorrowingDate(borrowingDate);
-		borrowingRegistration.setDueDate(dueDate);
-		borrowingRegistration.setReturnDate(returnDate);
+		Membership membership = borrowingRegistration.getClient().getMembership();
+		borrowingRegistration.getClient().setMembership(membership);
 
 		try {
-			Membership membership = membershipService.verifyIfTheClientHasActiveMembership(client);
-			membershipService.hasBorrowingPeriodPassedTheEndDateOfTheMembership(client, membership, book);
-			membershipService.getBorrowingPeriodByMembership(membership, book);
-			membershipService.getBorrowingRegistrationDate(client, membership, book, borrowingRegistration);
-			borrowingRegistration.setBook(book);
-			borrowingRegistration.setClient(client);
+			membershipService.getAvailableMembership(borrowingRegistration.getClient(),
+					borrowingRegistration.getBook());
+
+			membershipService.setStartDateAndDueDateOfTheBorrowing(borrowingRegistration.getClient().getMembership(),
+					borrowingRegistration.getBook(), borrowingRegistration);
 
 		} catch (NotActiveOrInexistentMembershipException e) {
 			e.printStackTrace();

@@ -8,6 +8,6 @@ import lombok.Data;
 public class BookCategoryDTO {
 
 	private Long categoryId;
-	private List<Long> books;
 	private String categoryName;
+	private List<Long> books;
 }

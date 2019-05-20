@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.sda.librarymanagement.entity.Client;
-import org.sda.librarymanagement.entity.Membership;
 import org.sda.librarymanagement.entity.dto.ClientDTO;
 import org.sda.librarymanagement.repository.ClientRepository;
 import org.springframework.beans.BeanUtils;
@@ -27,8 +26,8 @@ public class ClientService {
 	@Autowired
 	private MembershipService membershipService;
 
-	public Iterable<Client> getAllClients() {
-		return clientRepository.findAll();
+	public List<Client> getAllClients() {
+		return (List<Client>) clientRepository.findAll();
 	}
 
 	public Client getOneClientById(@PathVariable Long id) {
@@ -61,7 +60,7 @@ public class ClientService {
 		client.setLastName(clientDTO.getLastName());
 		client.setPhone(clientDTO.getPhone());
 		client.setEmail(clientDTO.getEmail());
-		client.setMemberships((List<Membership>) membershipService.getMembershipsByIds(clientDTO.getMemberships()));
+		client.setMembership(membershipService.getOneMembershipById(clientDTO.getMembership()));
 
 		return client;
 	}

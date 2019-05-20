@@ -3,7 +3,6 @@ package org.sda.librarymanagement.controller;
 import java.util.List;
 
 import org.sda.librarymanagement.entity.Book;
-import org.sda.librarymanagement.entity.BookCategory;
 import org.sda.librarymanagement.entity.dto.BookDTO;
 import org.sda.librarymanagement.service.BookCategoryService;
 import org.sda.librarymanagement.service.BookService;
@@ -62,18 +61,5 @@ public class BookController {
 	public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
 		bookService.deleteBook(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
-
-	private Book convertFromDTOToEntity(BookDTO bookDTO) {
-		Book book = new Book();
-		book.setBookId(bookDTO.getBookId());
-		book.setBookName(bookDTO.getBookName());
-		book.setAuthorName(bookDTO.getAuthorName());
-		book.setBorrowingPeriod(bookDTO.getBorrowingPeriod());
-		book.setBorrowingTypeAtHome(bookDTO.isBorrowingTypeAtHome());
-		book.setBookCategories(
-				(List<BookCategory>) bookCategoryService.getBookCategoriesByIds(bookDTO.getBookCategories()));
-		return book;
-
 	}
 }

@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -28,7 +28,7 @@ public class BookCategory {
 	private Long categoryId;
 	@Column(name = "category_name")
 	private String categoryName;
-	@JsonIgnore
+	@JsonBackReference
 	@ManyToMany(mappedBy = "bookCategories")
 	private List<Book> books = new ArrayList<Book>();
 

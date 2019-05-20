@@ -33,8 +33,8 @@ public class MembershipService {
 	@Autowired
 	private EntityManager entityManager;
 
-	public Iterable<Membership> getAllMemberships() {
-		return membershipRepository.findAll();
+	public List<Membership> getAllMemberships() {
+		return (List<Membership>) membershipRepository.findAll();
 	}
 
 	public void saveMembership(@RequestBody Membership membership) {
@@ -43,10 +43,6 @@ public class MembershipService {
 
 	public Membership getOneMembershipById(@PathVariable Long id) {
 		return entityManager.find(Membership.class, id);
-	}
-
-	public Iterable<Membership> getMembershipsByIds(List<Long> ids) {
-		return membershipRepository.findAllById(ids);
 	}
 
 	public Membership updateMembership(@PathVariable Long id, @RequestBody Membership membership) {
@@ -71,70 +67,57 @@ public class MembershipService {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String start = membershipDTO.getStartDate();
-		String end = membershipDTO.getEndDate();
 		LocalDate startDate = LocalDate.parse(start, formatter);
-		LocalDate endDate = LocalDate.parse(end, formatter);
 
 		membership.setStartDate(startDate);
-		membership.setEndDate(endDate);
 		membership.setClient(client);
 
 		return membership;
 	}
 
-	protected Membership verifyIfTheClientHasActiveMembership(Client client)
+	protected Membership getAvailableMembership(Client client, Book book)
 			throws NotActiveOrInexistentMembershipException {
 		client = clientService.getOneClientById(client.getClientId());
-		List<Membership> memberships = client.getMemberships();
-		Membership membership = memberships.stream().reduce((first, second) -> second).orElse(null);
-		if (membership != null & membership.getEndDate().isBefore(LocalDate.now())) {
+		Membership membership = client.getMembership();
+		membership.setEndDate(membership.getStartDate().plusDays(membership.getMembershipType().getDays()));
+		if (membership != null && membership.getEndDate().isBefore(LocalDate.now())) {
 			return membership;
 		} else {
-			if (membership == null || membership.getEndDate().isAfter(LocalDate.now())) {
+			if (membership == null || membership.getEndDate()
+					.isAfter(LocalDate.now().plusDays(membership.getMembershipType().getDays()))) {
 				throw new NotActiveOrInexistentMembershipException(
-						"The membership expired or the client does not have a membership!");
+						"The membership expired or the client doesn't have a membership!");
 			}
 		}
 		return null;
 	}
 
-	protected BorrowingPeriodEnum getBorrowingPeriodByMembership(Membership membership, Book book) {
-		BorrowingPeriodEnum borrowingPeriodByMembership = book.getBorrowingPeriod();
+	protected void setStartDateAndDueDateOfTheBorrowing(Membership membership, Book book,
+			BorrowingRegistration borrowingRegistration)
+			throws NotActiveOrInexistentMembershipException, BorrowingCannotPassTheEndDateOfTheMembershipException {
+		borrowingRegistration.setBorrowingDate(LocalDate.now());
 		switch (membership.getMembershipType()) {
 		case BASIC:
-			borrowingPeriodByMembership = BorrowingPeriodEnum.TWO_WEEKS;
+			book.setBorrowingPeriod(BorrowingPeriodEnum.TWO_WEEKS);
+			borrowingRegistration
+					.setDueDate(borrowingRegistration.getBorrowingDate().plusDays(book.getBorrowingPeriod().getDays()));
 			break;
 		case PREMIUM:
-			borrowingPeriodByMembership = BorrowingPeriodEnum.ONE_MONTH;
+			book.setBorrowingPeriod(BorrowingPeriodEnum.ONE_MONTH);
+			borrowingRegistration
+					.setDueDate(borrowingRegistration.getBorrowingDate().plusDays(book.getBorrowingPeriod().getDays()));
 			break;
 		case LUXURY:
-			borrowingPeriodByMembership = BorrowingPeriodEnum.TWO_MONTHS;
+			book.setBorrowingPeriod(BorrowingPeriodEnum.TWO_MONTHS);
+			borrowingRegistration
+					.setDueDate(borrowingRegistration.getBorrowingDate().plusDays(book.getBorrowingPeriod().getDays()));
 			break;
 		default:
 			break;
 		}
-		return borrowingPeriodByMembership;
-	}
-
-	protected boolean hasBorrowingPeriodPassedTheEndDateOfTheMembership(Client client, Membership membership, Book book)
-			throws NotActiveOrInexistentMembershipException {
-		Membership actualMembershipOfTheClient = verifyIfTheClientHasActiveMembership(client);
-		BorrowingPeriodEnum borrowingPeriod = getBorrowingPeriodByMembership(membership, book);
-		LocalDate borrowingPeriodOfBookThePlusStartDateOfTheMembership = actualMembershipOfTheClient.getStartDate()
-				.plusDays(borrowingPeriod.getDays());
-		LocalDate endDaDateOfTheMembership = actualMembershipOfTheClient.getEndDate();
-		if (borrowingPeriodOfBookThePlusStartDateOfTheMembership.isAfter(endDaDateOfTheMembership))
-			return true;
-		return false;
-	}
-
-	public void getBorrowingRegistrationDate(Client client, Membership membership, Book book, BorrowingRegistration borrowingRegistration)
-			throws BorrowingCannotPassTheEndDateOfTheMembershipException, NotActiveOrInexistentMembershipException {
-		if (hasBorrowingPeriodPassedTheEndDateOfTheMembership(client, membership, book) == true) {
+		if (borrowingRegistration.getDueDate().isAfter(membership.getEndDate()))
 			throw new BorrowingCannotPassTheEndDateOfTheMembershipException(
 					"Borrowing period is longer than availability of the membership!");
-		} else {
-			borrowingRegistration.setBorrowingDate(LocalDate.now());
-		}
 	}
+
 }

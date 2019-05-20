@@ -12,25 +12,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "BorrowingRegistrations")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-
 public class BorrowingRegistration {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "registration_id")
 	private Long borrowingRegistrationId;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private Client client;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
 	@Column(name = "borrowing_date")

@@ -26,16 +26,16 @@ public class BookService {
 	@Autowired
 	private EntityManager entityManager;
 
-	public Iterable<Book> getAllBooks() {
-		return bookRepository.findAll();
+	public List<Book> getAllBooks() {
+		return (List<Book>) bookRepository.findAll();
 	}
 
 	public Book getOneBookById(@PathVariable Long id) {
 		return entityManager.find(Book.class, id);
 	}
 
-	public Iterable<Book> getBooksByIds(List<Long> ids) {
-		return bookRepository.findAllById(ids);
+	public List<Book> getBooksByIds(List<Long> ids) {
+		return (List<Book>) bookRepository.findAllById(ids);
 	}
 
 	public void saveBook(@RequestBody Book book) {
@@ -59,7 +59,6 @@ public class BookService {
 		book.setBookId(bookDTO.getBookId());
 		book.setBookName(bookDTO.getBookName());
 		book.setAuthorName(bookDTO.getAuthorName());
-		book.setBorrowingPeriod(bookDTO.getBorrowingPeriod());
 		book.setBorrowingTypeAtHome(bookDTO.isBorrowingTypeAtHome());
 		book.setBookCategories(
 				(List<BookCategory>) bookCategoryService.getBookCategoriesByIds(bookDTO.getBookCategories()));

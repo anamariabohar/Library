@@ -62,11 +62,7 @@ public class BorrowingRegistrationControllerTest {
 
 	@Test
 	public void addBookCategory() throws Exception {
-<<<<<<< HEAD
-		String mockBookCategoryAsJSON = "{\"categoryId\":1,\"books\":[{\"bookId\":1}],\"categoryName\":\"Science Fiction\"}";
-=======
 		String mockBookCategoryAsJSON = "{\"categoryId\":1,\"books\":[],\"categoryName\":\"Science Fiction\"}";
->>>>>>> e74b129ee7069b2d8e124f5e0fd11b79150682c8
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/library/bookCategory/")
 				.accept(MediaType.APPLICATION_JSON).content(mockBookCategoryAsJSON)
 				.contentType(MediaType.APPLICATION_JSON);
@@ -83,11 +79,7 @@ public class BorrowingRegistrationControllerTest {
 	@Test
 	public void addBook() throws Exception {
 		addBookCategory();
-<<<<<<< HEAD
-		String mockBookCategoryAsJSON = "{\"bookName\":\"City of Bones\",\"authorName\":\"Cassandra Clare\",\"borrowingTypeAtHome\":true,\"borrowingPeriod\":\"TWO_WEEKS\",\"bookCategories\":[{\"categoryId\":1}]}";
-=======
 		String mockBookCategoryAsJSON = "{\"bookName\":\"City of Bones\",\"authorName\":\"Cassandra Clare\",\"borrowingTypeAtHome\":true,\"borrowingPeriod\":\"TWO_WEEKS\",\"bookCategories\":[\"categoryId\":1,\"categoryName\":\"Science Fiction\"]}";
->>>>>>> e74b129ee7069b2d8e124f5e0fd11b79150682c8
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/library/book/").accept(MediaType.APPLICATION_JSON)
 				.content(mockBookCategoryAsJSON).contentType(MediaType.APPLICATION_JSON);
 
@@ -104,10 +96,7 @@ public class BorrowingRegistrationControllerTest {
 	public void addBorrowingRegistration() throws Exception {
 		addMembership();
 		addClient();
-<<<<<<< HEAD
 		addClient();
-=======
->>>>>>> e74b129ee7069b2d8e124f5e0fd11b79150682c8
 		addBook();
 		String mockBookCategoryAsJSON = "{\"borrowingRegistrationId\":1,\"client\":{\"clientId\" :1},\"book\":{\"bookId\":1},\"borrowingDate\":\"2018-04-25\",\"returnDate\":\"2018-05-25\"}";
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/library/borrowingRegistration/")

@@ -26,12 +26,12 @@ public class BookCategoryService {
 	@Autowired
 	private EntityManager entityManager;
 
-	public Iterable<BookCategory> getAllBookCategories() {
-		return bookCategoryRepository.findAll();
+	public List<BookCategory> getAllBookCategories() {
+		return (List<BookCategory>) bookCategoryRepository.findAll();
 	}
 
-	public Iterable<BookCategory> getBookCategoriesByIds(List<Long> ids) {
-		return bookCategoryRepository.findAllById(ids);
+	public List<BookCategory> getBookCategoriesByIds(List<Long> ids) {
+		return (List<BookCategory>) bookCategoryRepository.findAllById(ids);
 	}
 
 	public BookCategory getOneBookCategoryById(@PathVariable Long id) {

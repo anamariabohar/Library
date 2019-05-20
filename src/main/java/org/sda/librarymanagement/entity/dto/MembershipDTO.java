@@ -9,5 +9,4 @@ public class MembershipDTO {
 	private String startDate;
 	private String endDate;
 	private Long clientId;
-
 }
