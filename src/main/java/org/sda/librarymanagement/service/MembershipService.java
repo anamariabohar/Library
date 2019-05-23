@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.sda.librarymanagement.entity.Book;
 import org.sda.librarymanagement.entity.BorrowingRegistration;
@@ -14,7 +15,8 @@ import org.sda.librarymanagement.entity.dto.MembershipDTO;
 import org.sda.librarymanagement.entity.enums.BorrowingPeriodEnum;
 import org.sda.librarymanagement.entity.enums.MembershipTypeEnum;
 import org.sda.librarymanagement.repository.MembershipRepository;
-import org.sda.librarymanagement.service.exceptions.BorrowingCannotPassTheEndDateOfTheMembershipException;
+import org.sda.librarymanagement.service.exceptions.BorrowingAndReturnDateConflictException;
+import org.sda.librarymanagement.service.exceptions.BorrowingCannotBeDoneBeforeOrAfterAvailabilityOfTheMembershipException;
 import org.sda.librarymanagement.service.exceptions.NotActiveOrInexistentMembershipException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
+@Transactional
 public class MembershipService {
 	@Autowired
 	private MembershipRepository membershipRepository;
@@ -33,24 +36,29 @@ public class MembershipService {
 	@Autowired
 	private EntityManager entityManager;
 
+	@Transactional
 	public List<Membership> getAllMemberships() {
 		return (List<Membership>) membershipRepository.findAll();
 	}
 
+	@Transactional
 	public void saveMembership(@RequestBody Membership membership) {
 		membershipRepository.save(membership);
 	}
 
+	@Transactional
 	public Membership getOneMembershipById(@PathVariable Long id) {
 		return entityManager.find(Membership.class, id);
 	}
 
+	@Transactional
 	public Membership updateMembership(@PathVariable Long id, @RequestBody Membership membership) {
 		Membership existingMembership = entityManager.find(Membership.class, id);
 		BeanUtils.copyProperties(membership, existingMembership);
 		return membershipRepository.save(existingMembership);
 	}
 
+	@Transactional
 	public Membership deleteMembership(@PathVariable Long id) {
 		Membership existingMembership = entityManager.find(Membership.class, id);
 		membershipRepository.delete(existingMembership);
@@ -66,10 +74,10 @@ public class MembershipService {
 		membership.setMembershipType(membershipTypes);
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String start = membershipDTO.getStartDate();
-		LocalDate startDate = LocalDate.parse(start, formatter);
+		LocalDate startDate = LocalDate.parse(membershipDTO.getStartDate(), formatter);
 
 		membership.setStartDate(startDate);
+
 		membership.setClient(client);
 
 		return membership;
@@ -79,7 +87,6 @@ public class MembershipService {
 			throws NotActiveOrInexistentMembershipException {
 		client = clientService.getOneClientById(client.getClientId());
 		Membership membership = client.getMembership();
-		membership.setEndDate(membership.getStartDate().plusDays(membership.getMembershipType().getDays()));
 		if (membership != null && membership.getEndDate().isBefore(LocalDate.now())) {
 			return membership;
 		} else {
@@ -92,32 +99,38 @@ public class MembershipService {
 		return null;
 	}
 
-	protected void setStartDateAndDueDateOfTheBorrowing(Membership membership, Book book,
-			BorrowingRegistration borrowingRegistration)
-			throws NotActiveOrInexistentMembershipException, BorrowingCannotPassTheEndDateOfTheMembershipException {
-		borrowingRegistration.setBorrowingDate(LocalDate.now());
+	protected void setDueDateOfTheBorrowing(Membership membership, BorrowingRegistration borrowingRegistration)
+			throws NotActiveOrInexistentMembershipException,
+			BorrowingCannotBeDoneBeforeOrAfterAvailabilityOfTheMembershipException,
+			BorrowingAndReturnDateConflictException {
 		switch (membership.getMembershipType()) {
 		case BASIC:
-			book.setBorrowingPeriod(BorrowingPeriodEnum.TWO_WEEKS);
-			borrowingRegistration
-					.setDueDate(borrowingRegistration.getBorrowingDate().plusDays(book.getBorrowingPeriod().getDays()));
+			borrowingRegistration.setBorrowingPeriod(BorrowingPeriodEnum.TWO_WEEKS);
+			borrowingRegistration.setDueDate(borrowingRegistration.getBorrowingDate()
+					.plusDays(borrowingRegistration.getBorrowingPeriod().getDays()));
 			break;
 		case PREMIUM:
-			book.setBorrowingPeriod(BorrowingPeriodEnum.ONE_MONTH);
-			borrowingRegistration
-					.setDueDate(borrowingRegistration.getBorrowingDate().plusDays(book.getBorrowingPeriod().getDays()));
+			borrowingRegistration.setBorrowingPeriod(BorrowingPeriodEnum.ONE_MONTH);
+			borrowingRegistration.setDueDate(borrowingRegistration.getBorrowingDate()
+					.plusDays(borrowingRegistration.getBorrowingPeriod().getDays()));
 			break;
 		case LUXURY:
-			book.setBorrowingPeriod(BorrowingPeriodEnum.TWO_MONTHS);
-			borrowingRegistration
-					.setDueDate(borrowingRegistration.getBorrowingDate().plusDays(book.getBorrowingPeriod().getDays()));
+			borrowingRegistration.setBorrowingPeriod(BorrowingPeriodEnum.TWO_MONTHS);
+			borrowingRegistration.setDueDate(borrowingRegistration.getBorrowingDate()
+					.plusDays(borrowingRegistration.getBorrowingPeriod().getDays()));
 			break;
 		default:
 			break;
 		}
-		if (borrowingRegistration.getDueDate().isAfter(membership.getEndDate()))
-			throw new BorrowingCannotPassTheEndDateOfTheMembershipException(
-					"Borrowing period is longer than availability of the membership!");
+		if (borrowingRegistration.getBorrowingDate().isBefore(membership.getStartDate())
+				|| borrowingRegistration.getDueDate().isAfter(membership.getEndDate()))
+			throw new BorrowingCannotBeDoneBeforeOrAfterAvailabilityOfTheMembershipException(
+					"Borrowing period is before or after than availability of the membership!");
+		if (borrowingRegistration.getReturnDate() != null
+				&& (borrowingRegistration.getReturnDate().isBefore(borrowingRegistration.getBorrowingDate())
+						|| borrowingRegistration.getBorrowingDate().isAfter(borrowingRegistration.getReturnDate())))
+			throw new BorrowingAndReturnDateConflictException(
+					"Borrowing date is in conflict with return date of the book!");
 	}
 
 }

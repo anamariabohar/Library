@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.sda.librarymanagement.entity.Client;
 import org.sda.librarymanagement.entity.dto.ClientDTO;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
+@Transactional
 public class ClientService {
 
 	@Autowired(required = true)
@@ -26,24 +28,29 @@ public class ClientService {
 	@Autowired
 	private MembershipService membershipService;
 
+	@Transactional
 	public List<Client> getAllClients() {
 		return (List<Client>) clientRepository.findAll();
 	}
 
+	@Transactional
 	public Client getOneClientById(@PathVariable Long id) {
 		return entityManager.find(Client.class, id);
 	}
 
+	@Transactional
 	public void saveClient(@RequestBody Client client) {
 		clientRepository.save(client);
 	}
 
+	@Transactional
 	public Client updateClient(@PathVariable Long id, @RequestBody Client client) {
 		Client existingClient = entityManager.find(Client.class, id);
 		BeanUtils.copyProperties(client, existingClient);
 		return clientRepository.save(existingClient);
 	}
 
+	@Transactional
 	public Client deleteClient(@PathVariable Long id) {
 		Client existingClient = entityManager.find(Client.class, id);
 		clientRepository.delete(existingClient);

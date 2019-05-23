@@ -29,6 +29,7 @@ public class MembershipController {
 	@PostMapping("/membership")
 	public ResponseEntity<Void> addMembership(@RequestBody MembershipDTO membershipDTO, UriComponentsBuilder builder) {
 		Membership membership = membershipService.convertFromDTOToEntity(membershipDTO);
+		membership.setEndDate(membership.getStartDate().plusDays(membership.getMembershipType().getDays()));
 		membershipService.saveMembership(membership);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(builder.path("/membership").buildAndExpand(membership.getMembershipID()).toUri());

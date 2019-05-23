@@ -37,7 +37,7 @@ public class Membership {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Column(name = "end_date")
 	private LocalDate endDate;
-	@OneToOne
+	@OneToOne(mappedBy = "membership")
 	@JoinColumn(name = "client_id")
 	private Client client;
 

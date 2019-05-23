@@ -3,6 +3,7 @@ package org.sda.librarymanagement.service;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.sda.librarymanagement.entity.Book;
 import org.sda.librarymanagement.entity.BookCategory;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
+@Transactional
 public class BookService {
 
 	@Autowired
@@ -26,28 +28,34 @@ public class BookService {
 	@Autowired
 	private EntityManager entityManager;
 
+	@Transactional
 	public List<Book> getAllBooks() {
 		return (List<Book>) bookRepository.findAll();
 	}
 
+	@Transactional
 	public Book getOneBookById(@PathVariable Long id) {
 		return entityManager.find(Book.class, id);
 	}
 
+	@Transactional
 	public List<Book> getBooksByIds(List<Long> ids) {
 		return (List<Book>) bookRepository.findAllById(ids);
 	}
 
+	@Transactional
 	public void saveBook(@RequestBody Book book) {
 		bookRepository.save(book);
 	}
 
+	@Transactional
 	public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
 		Book existingBook = entityManager.find(Book.class, id);
 		BeanUtils.copyProperties(book, existingBook);
 		return bookRepository.save(existingBook);
 	}
 
+	@Transactional
 	public Book deleteBook(@PathVariable Long id) {
 		Book existingBook = entityManager.find(Book.class, id);
 		bookRepository.delete(existingBook);

@@ -6,8 +6,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import org.sda.librarymanagement.entity.enums.BorrowingPeriodEnum;
 
 import lombok.Data;
 
@@ -34,11 +30,13 @@ public class Book {
 	private String authorName;
 	@Column(name = "borrowing_type")
 	private boolean borrowingTypeAtHome;
-	@Column(name = "borrowing_period")
-	@Enumerated(EnumType.STRING)
-	private BorrowingPeriodEnum borrowingPeriod;
 	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "book_category", joinColumns = { @JoinColumn(name = "book_id") }, inverseJoinColumns = {
+	@JoinTable(name = "Books_Categories", joinColumns = { @JoinColumn(name = "book_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "category_id") })
 	List<BookCategory> bookCategories = new ArrayList<BookCategory>();
+	@Override
+	public String toString() {
+		return "Book [bookId=" + bookId + ", bookName=" + bookName + ", authorName=" + authorName
+				+ ", borrowingTypeAtHome=" + borrowingTypeAtHome + ", bookCategories=" + bookCategories + "]";
+	}
 }

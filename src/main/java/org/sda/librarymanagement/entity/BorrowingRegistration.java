@@ -4,7 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,11 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.sda.librarymanagement.entity.enums.BorrowingPeriodEnum;
+
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "BorrowingRegistrations")
+@Table(name = "Borrowing_Registrations")
 public class BorrowingRegistration {
 
 	@Id
@@ -33,6 +36,9 @@ public class BorrowingRegistration {
 	private LocalDate borrowingDate;
 	@Column(name = "due_date")
 	private LocalDate dueDate;
-	@Column(name = "return_date")
+	@Column(name = "return_date", nullable = true)
 	private LocalDate returnDate;
+	@Column(name = "borrowing_period")
+	@Enumerated(EnumType.STRING)
+	private BorrowingPeriodEnum borrowingPeriod;
 }

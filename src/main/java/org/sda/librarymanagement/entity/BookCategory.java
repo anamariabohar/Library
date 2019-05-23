@@ -12,14 +12,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Category")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class BookCategory {
 
 	@Id
@@ -31,5 +29,10 @@ public class BookCategory {
 	@JsonBackReference
 	@ManyToMany(mappedBy = "bookCategories")
 	private List<Book> books = new ArrayList<Book>();
+
+	@Override
+	public String toString() {
+		return "BookCategory [categoryId=" + categoryId + ", categoryName=" + categoryName + "]";
+	}
 
 }
