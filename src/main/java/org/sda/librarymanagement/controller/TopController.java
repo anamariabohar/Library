@@ -1,10 +1,13 @@
 package org.sda.librarymanagement.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.sda.librarymanagement.entity.Book;
-import org.sda.librarymanagement.entity.BorrowingRegistration;
 import org.sda.librarymanagement.service.BookService;
 import org.sda.librarymanagement.service.BorrowingRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +30,30 @@ public class TopController {
 	@GetMapping("/top3MostBorrowedBooks")
 	public ResponseEntity<List<Book>> getTopMostThreeMostBorrowedBooks() {
 
-		String sql = "select book_name, author_name from Borrowing_Registrations as br \n"
-				+ "inner join Books as b  on b.book_id=br.book_id\n" + "group by br.book_id\n"
-				+ "order by count(book_name) DESC\n" + "limit 3\n;";
+		Map<String, Integer> theMostBorrowedBooksList = new HashMap<>();
 
-		List<BorrowingRegistration> borrowingRegistrations = borrowingRegistrationService
-				.getAllBorrowingRegistrations();
+		borrowingRegistrationService
+		.getAllBorrowingRegistrations()
+		.stream()
+		.forEach(borrowing -> theMostBorrowedBooksList
+				.merge(borrowing.getBook().getBookName(), 1, (oldV, newV) -> oldV + 1));
+		
+		LinkedHashMap<String, Integer> reverseSortedMap=new LinkedHashMap<>();
+		
+		theMostBorrowedBooksList
+		.entrySet()
+		.stream()
+		.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+		.limit(3)
+		.forEach(record -> reverseSortedMap.put(record.getKey(), record.getValue()));		
 
-		List<Book> books = bookService.getAllBooks().stream()
-				.filter(book -> borrowingRegistrations.stream().anyMatch(
-						borrowingRegistration -> book.getBookId().equals(borrowingRegistration.getBook().getBookId())))
-				.limit(3).collect(Collectors.toList());
-
+		List<Book> books=new ArrayList<>();
+		
+		reverseSortedMap
+		.entrySet()
+		.stream()
+		.forEach(bookName -> books.add(bookService.getOneBookByName(bookName.getKey())));
+		
 		return new ResponseEntity<List<Book>>(books, HttpStatus.OK);
 	}
 

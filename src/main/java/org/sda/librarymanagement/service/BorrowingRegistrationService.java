@@ -85,8 +85,12 @@ public class BorrowingRegistrationService {
 		borrowingRegistration.setBorrowingDate(borrowingDate);
 
 		try {
-			LocalDate returnDate = LocalDate.parse(borrowingRegistrationDTO.getReturnDate(), dateTimeFormatter);
-			borrowingRegistration.setReturnDate(returnDate);
+			if (book.isBorrowingTypeAtHome() == false) {
+				borrowingRegistration.setReturnDate(borrowingRegistration.getBorrowingDate());
+			} else {
+				LocalDate returnDate = LocalDate.parse(borrowingRegistrationDTO.getReturnDate(), dateTimeFormatter);
+				borrowingRegistration.setReturnDate(returnDate);
+			}
 
 		} catch (NullPointerException e) {
 			// do nothing

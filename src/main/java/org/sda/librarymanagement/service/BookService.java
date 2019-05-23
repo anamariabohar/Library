@@ -37,6 +37,13 @@ public class BookService {
 	public Book getOneBookById(@PathVariable Long id) {
 		return entityManager.find(Book.class, id);
 	}
+	
+	@Transactional
+	public Book getOneBookByName(@PathVariable String bookName) {
+		return (Book) entityManager.createQuery("SELECT b FROM Book as b WHERE b.bookName LIKE :name")
+				.setParameter("name", bookName)
+				.getSingleResult();
+	}
 
 	@Transactional
 	public List<Book> getBooksByIds(List<Long> ids) {
