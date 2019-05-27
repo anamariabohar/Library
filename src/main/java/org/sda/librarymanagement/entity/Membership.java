@@ -40,5 +40,4 @@ public class Membership {
 	@OneToOne(mappedBy = "membership")
 	@JoinColumn(name = "client_id")
 	private Client client;
-
 }

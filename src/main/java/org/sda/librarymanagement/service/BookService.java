@@ -43,6 +43,10 @@ public class BookService {
 		return (Book) entityManager.createQuery("SELECT b FROM Book as b WHERE b.bookName LIKE :name")
 				.setParameter("name", bookName)
 				.getSingleResult();
+		
+		/* Optional<Book> books=getAllBooks();
+		 * return books.stream().filter(x -> x.getBookName().equals(bookName).findAny();
+		 */
 	}
 
 	@Transactional

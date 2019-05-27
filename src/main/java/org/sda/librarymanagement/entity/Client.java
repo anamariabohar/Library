@@ -39,4 +39,5 @@ public class Client {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "membership_id")
 	private Membership membership;
+
 }
